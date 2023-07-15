@@ -12,6 +12,7 @@ namespace Catalog
                 Id = item.Id,
                 Name = item.Name,
                 Price = item.Price,
+                CreatedDate = item.CreatedDate,
             };
         }
     }

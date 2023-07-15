@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+# declare the desired state of the pods
+# a pod is a group of containers that share storage/network resources
+kind: Deployment
+metadata:
+  name: catalog-deployment
+spec:
+  # define which pods to manage
+  selector:
+    matchLabels:
+      # manage pods with this label
+      app: catalog
+  # configuration for containers included in the deployment
+  template:
+    metadata:
+      # assign label to pods
+      labels:
+        app: catalog
+    spec:
+      # declare the list of containers
+      containers:
+        - name: catalog
+          image: ngianguyen81/catalog:v2
+          # declare resource requirement the node needed to run this container
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m" # 0.5 CPU ~ assign half CPU to this container
+          # declare which port this container is exposing
+          ports:
+            - containerPort: 80
+          # declare environment variables
+          env:
+            - name: MongoDbSettings__Host
+              value: mongodb-service
+            - name: MongoDbSettings__Password
+              valueFrom:
+                secretKeyRef:
+                  name: catalog-secrets
+                  key: mongodb-password
+          # configure for Kubernetes check the health of this container
+          # service is alive
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 80
+          # service is ready to serve requests
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 80
+
+---
+apiVersion: v1
+# expose the application as a network service
+kind: Service
+metadata:
+  name: catalog-service
+spec:
+  # define the service type to allow the outside to reach this service
+  type: LoadBalancer
+  # connect this service to pods with this label
+  selector:
+    app: catalog
+  ports:
+    # port for the outside to reach this service
+    - port: 80
+      # port of the container
+      targetPort: 80

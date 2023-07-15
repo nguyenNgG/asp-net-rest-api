@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+# manage stateful applications providing guarantees about the ordering and uniqueness of pods
+# if MongoDB 1 goes down, it will come back as MongoDB 1
+kind: StatefulSet
+metadata:
+  name: mongodb-statefulset
+spec:
+  # identity for the stateful set and the pods managed by it
+  serviceName: "mongodb-service"
+  # define which labels the stateful set will manage
+  selector:
+    matchLabels:
+      app: mongodb
+  # configuration for containers included in the deployment
+  template:
+    metadata:
+      # assign label to pods
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 27017
+          # env:
+          #   - name: MONGO_INITDB_ROOT_USERNAME
+          #     value: "mongoadmin"
+          #   - name: MONGO_INITDB_ROOT_PASSWORD
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: catalog-secrets
+          #         key: mongodb-password
+          # map the claimed volume to the this container
+          volumeMounts:
+            - mountPath: /data/db
+              name: data
+  # declare a storage space for the database files
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        # define which way the persistent volume will be mounted
+        accessModes: ["ReadWriteOnce"] # mounted read-write by a single node
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  # specify the IP address for the service
+  # choosing headless service
+  # clusterIP: 
+  type: LoadBalancer
+  # connect this service to pods with this label
+  selector:
+    app: mongodb
+  ports:
+    - port: 27017
+      targetPort: 27017

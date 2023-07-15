@@ -1,13 +1,29 @@
 using Catalog.Repositories;
+using Catalog.Settings;
 using Catalog.Utilities;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 //// Configure dependency injection
-builder.Services.AddSingleton<IItemsRepository, InMemItemsRepository>();
+
+///// Configure MongoDB
+BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+
+builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
+{
+    var settings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+    return new MongoClient(settings?.ConnectionString);
+});
+
+builder.Services.AddSingleton<IItemsRepository, MongoDbItemsRepository>();
 
 builder.Services.AddControllers(o =>
 {

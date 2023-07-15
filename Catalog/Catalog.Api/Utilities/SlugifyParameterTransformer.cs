@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Catalog.Utilities
+namespace Catalog.Api.Utilities
 {
     public class SlugifyParameterTransformer : IOutboundParameterTransformer
     {

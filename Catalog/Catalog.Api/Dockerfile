@@ -12,13 +12,13 @@ ENV ASPNETCORE_URLS=http://+:80
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 # copy file to current directory
-COPY ["Catalog.csproj", "./"]
+COPY ["Catalog.Api.csproj", "./"]
 # get dependencies
-RUN dotnet restore "Catalog.csproj"
+RUN dotnet restore "Catalog.Api.csproj"
 # copy all files
 COPY . .
 # build and publish with configuration for release into folder 
-RUN dotnet publish "Catalog.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Catalog.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # third stage: final
 FROM base AS final
@@ -27,4 +27,4 @@ WORKDIR /app
 # copy files from build stage into the current directory
 COPY --from=build /app/publish .
 # command to start the REST API
-ENTRYPOINT ["dotnet", "Catalog.dll"]
+ENTRYPOINT ["dotnet", "Catalog.Api.dll"]

@@ -1,8 +1,8 @@
 using System.Net.Mime;
 using System.Text.Json;
-using Catalog.Repositories;
-using Catalog.Settings;
-using Catalog.Utilities;
+using Catalog.Api.Repositories;
+using Catalog.Api.Settings;
+using Catalog.Api.Utilities;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using MongoDB.Bson;

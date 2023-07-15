@@ -1,9 +1,13 @@
+using Catalog.Repositories;
 using Catalog.Utilities;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+//// Configure dependency injection
+builder.Services.AddSingleton<IItemsRepository, InMemItemsRepository>();
 
 builder.Services.AddControllers(o =>
 {

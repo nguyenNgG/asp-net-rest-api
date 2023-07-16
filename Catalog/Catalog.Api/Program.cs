@@ -31,10 +31,11 @@ builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 
 builder.Services.AddSingleton<IItemsRepository, MongoDbItemsRepository>();
 
-builder.Services.AddControllers(o =>
+builder.Services.AddControllers(options =>
 {
+    options.SuppressAsyncSuffixInActionNames = false;
     // transform /App-Entities to /app-entities
-    o.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
+    options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

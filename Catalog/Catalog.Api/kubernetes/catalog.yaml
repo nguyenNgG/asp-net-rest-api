@@ -20,7 +20,7 @@ spec:
       # declare the list of containers
       containers:
         - name: catalog
-          image: ngianguyen81/catalog:v2
+          image: ngianguyen81/catalog:v4
           # declare resource requirement the node needed to run this container
           resources:
             limits:
